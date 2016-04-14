@@ -6,9 +6,17 @@ const serialport = require('serialport');
 const serialSysEvent = require('./serialSystemEvents');
 const serialResponse = require('./serialResponse');
 
+// area & zone configuration
+const config = {
+  '001': ['001', '002'],
+  '002': ['003'],
+  '003': ['004'],
+  '004': []
+};
+
 const usbPort    = '/dev/tty.usbserial-a40069ba';
 const serialPass = '1234';
-const armCode    = 'I'; // A:Regular, F:Force, S:Stay, I:Instant
+const armCode    = 'A'; // A:Regular, F:Force, S:Stay, I:Instant
 const serialOpts = {
                      baudrate: 2400,
                      dataBits: 8,
@@ -65,11 +73,15 @@ function standardWriteData(res) {
 }
 
 
+/* Standard Command */
+
 router.get('/command/:command', (req, res, next) => {
   const command = req.params.command;
   standardReadData(command.substr(0,5), res);
   serial.write(`${command}\r`, standardWriteData);
 });
+
+/* Area */
 
 router.get('/area/status/:id', (req, res, next) => {
   const header = `RA${req.params.id}`;
@@ -125,6 +137,8 @@ router.get('/area/smoke/reset/:id', (req, res, next) => {
   serial.write(`${header}\r`, standardWriteData);
 });
 
+/* Zone */
+
 router.get('/zone/status/:id', (req, res, next) => {
   const header = `RZ${req.params.id}`;
   standardReadData(header, res);
@@ -137,11 +151,15 @@ router.get('/zone/label/:id', (req, res, next) => {
   serial.write(`${header}\r`, standardWriteData);
 });
 
+/* User */
+
 router.get('/user/label/:id', (req, res, next) => {
   const header = `UL${req.params.id}`;
   standardReadData(header, res);
   serial.write(`${header}\r`, standardWriteData);
 });
+
+/* Utility */
 
 router.get('/utility/:id', (req, res, next) => {
   const header = `UK${req.params.id}`;

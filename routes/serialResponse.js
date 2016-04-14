@@ -1,5 +1,7 @@
 'use strict';
 
+/* this should not be in routes directory. fix later */
+
 module.exports = (header, output) => {
 
   const _header = output.substr(0, 5);
