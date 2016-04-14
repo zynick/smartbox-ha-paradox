@@ -1,0 +1,109 @@
+
+17:15:15 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+17:15:36 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+17:15:57 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'ZL001Zone 001        \r'
+17:17:06 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'ZL001Zone 001        \r'
+17:17:20 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'RA001DOTOOOO\r'
+17:18:00 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'RA001\r'
+b'RA001DOTOOOO\r'
+17:18:20 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'RZ001\r'
+b'RZ001COOOO\r'
+17:18:59 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'ZL001\r'
+b'ZL001Zone 001        \r'
+17:35:37 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AL001\r'
+b'AL001Area 1          \r'
+17:35:57 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'UL001\r'
+b'UL001User 001        \r'
+17:36:09 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AA001A1234\r'
+b'AA001&ok\rG005N001A000\rG065N000A015\rG065N001A001\rG065N003A001\rG009N001A001\rG064N000A015\rG065N000A015\rG065N003A001\r'
+18:00:35 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AA001A1233\r'
+b'AA001&fail\r'
+18:00:48 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AQ001A1234\r'
+b'AQ001&fail\r'
+18:01:27 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AQ001A1234\r'
+b'AQ001&fail\r'
+18:01:43 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AA001A1234\r'
+b'AA001&ok\rG005N001A000\rG065N000A015\rG065N001A001\rG065N003A001\r'
+18:03:20 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AD001A1234\r'
+b'AD001&fail\r'
+18:03:27 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AD0011234\r'
+b'AD001&ok\rG005N001A000\rG013N001A001\rG065N000A015\rG065N003A001\r'
+18:03:39 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'PE001\r'
+b''
+18:05:12 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'PE001\r'
+b'PE001&ok\rG030N000A001\r'
+18:06:08 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'PE001\r'
+b'PE001&ok\rG030N000A001\rG064N004A001\rG064N006A001\rG065N000A015\rG065N003A001\r'
+18:08:10 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AD0011234\r'
+b'AD001&ok\rG005N001A000\rG019N001A001\rG065N000A015\rG065N003A001\r'
+18:08:20 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'PM001\r'
+^[[Ab'PM001&ok\rG030N001A001\rG064N004A001\rG064N006A001\rG065N000A015\rG065N003A001\r'
+18:08:36 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AD0011234\r'
+b'AD001&ok\rG005N001A000\rG019N001A001\rG065N000A015\rG065N003A001\r'
+18:08:42 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'PF001\r'
+b'PF001&ok\rG030N002A001\rG064N004A001\rG064N007A001\rG065N000A015\rG065N003A001\r'
+18:08:53 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AD0011234\r'
+b'AD001&ok\rG005N001A000\rG019N001A001\rG065N000A015\rG065N003A001\r'
+18:08:58 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'PM001\r'
+^[[Ab'PM001&ok\rG030N001A001\rG064N004A001\rG064N006A001\rG065N000A015\rG065N003A001\r'
+18:09:05 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AD0011234\r'
+b'AD001&ok\rG005N001A000\rG019N001A001\rG065N000A015\rG065N003A001\r'
+18:09:12 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'SR001\r'
+b'SR001&ok\rG004N001A000\r'
+18:09:33 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'UK001\r'
+b'UK001&ok\rG048N001A000\r'
+18:09:42 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'PGM000000001002\r'
+b'PGM00&fail\r'
+18:15:15 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'PGM000255001002\r'
+b'PGM00&fail\r'
+18:33:33 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'PE001\r'
+b'PE001&ok\rG030N000A001\rG064N004A001\rG064N006A001\rG065N000A015\rG065N003A001\r'
+18:44:53 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AD0011234\r'
+b'AD001&ok\rG005N001A000\rG019N001A001\rG065N000A015\rG065N003A001\r'
+18:44:59 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AA001A1234\r'
+b'AA001&ok\rG005N001A000\rG065N000A015\rG065N001A001\rG065N003A001\r'
+18:45:13 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'PE001\r'
+b'PE001&ok\rG030N000A001\rG064N000A015\rG064N004A001\rG064N006A001\rG065N000A015\rG065N003A001\r'
+18:45:30 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AD0011234\r'
+b'AD001&ok\rG005N001A000\rG019N001A001\rG016N001A001\rG065N000A015\rG065N003A001\r'
+18:45:35 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AA001A1234\r'
+b'AA001&ok\rG005N001A000\rG065N000A015\rG065N001A001\rG065N003A001\r'
+18:45:46 zynick@zynick:~/Downloads/prt3usb$ python serial_write.py
+b'AD0011234\r'
+b'AD001&ok\rG005N001A000\rG026N002A001\rG019N001A001\rG016N001A001\rG065N000A015\rG065N003A001\rG065N004A001\r'
+18:50:56 zynick@zynick:~/Downloads/prt3usb$
