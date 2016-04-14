@@ -1,0 +1,12 @@
+{
+  "immed"   : true,
+  "latedef" : true,
+  "newcap"  : true,
+  "sub"     : true,
+  "quotmark": true,
+  "es5"     : true,
+  "esnext"  : true,
+  "browser" : true,
+  "jquery"  : true,
+  "node"    : true
+}

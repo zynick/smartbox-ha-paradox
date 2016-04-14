@@ -1,0 +1,74 @@
+# ARM
+G005 N001 A000  user code entered on keypad, user 001, area 000
+G065 N000 A015  status 2, ready, area 015 (area should be in between 1-8)
+G065 N001 A001  status 2, exit delay, area 001
+G065 N003 A001  status 2, system in trouble, area 001
+G009 N001 A001 *arming with master, user 001, area 001
+G064 N000 A015 *status 1, armed, area 015
+G065 N000 A015  status 2, ready, area 015
+G065 N003 A001  status 2, system in trouble, area 001
+
+# DISARM
+G005 N001 A000  user code entered on keypad, user 001, area 000
+G013 N001 A001 *disarm with master, user code 001, area 001
+G065 N000 A015  status 2, ready, area 015
+G065 N003 A001  status 2, system in trouble, area 001
+
+# ARM
+G005 N001 A000  user code entered on keypad, user 001, area 000
+G064 N003 A001 *status 1, instant armed, area 001
+G065 N000 A015  status 2, ready, area 015
+G065 N001 A001  status 2, exit delay, area 001
+G065 N003 A001  status 2, instant armed, area 001
+G004 N002 A001 *non-reportable event, arm with no entry delay, area 001
+G012 N004 A001 *special arming, partial arming, area 001
+G009 N001 A001 *arming with master, user 001, area 001
+G064 N000 A015  status 1, armed, area 015
+G064 N003 A001  status 1, instant armed, area 001
+G065 N000 A015  status 2, ready, area 015
+G065 N003 A001  status 2, system in trouble, area 001
+
+------------------------------------------------------
+
+# ALARM TRIGGERED
+G001 N001 A001 *zone is open, zone 001, area 001
+G024 N001 A001 *zone in alarm, zone 001, area 001
+G0645N004 A001 ??? status 1, strobe alarm, area 001
+               ??? status 2, alarm in memory, area 001
+G000 N001 A001  zone is ok, zone 001, area 001         hmm ?? zone is not ok at this point!
+
+# DISARM WITH SERIAL
+G005 N001 A000  user code entered on keypad, user 001, area 000
+G026 N001 A001  zone alarm restore, user 001, area 001
+G019 N001 A001 *alarm cancelled with master, user 001, area 001
+G016 N001 A001 *disarm after alarm with master, user 001, area 001
+G065 N000 A015  status 2, ready, area 015
+G065 N003 A001  status 2, system in trouble, area 001
+G065 N004 A001  status 2, alarm in memory, area 001
+
+# ALARM TRIGGERED
+G001 N001 A001
+G024 N001 A001
+G0645N004 A001
+G000 N001 A001
+
+# DISARM WITH IP
+G026 N001 A001  zone alarm restore, user 001, area 001
+G004 N020 A001  non-reportable event, ??? area 001
+G022 N003 A001  special disarm events, disarming with winload after alarm, area 001
+G065 N000 A015  status 2, ready, area 015
+G065 N003 A001  status 2, system in trouble, area 001
+G065 N004 A001  status 2, alarm in memory, area 001
+
+# NORMAL ARM WITH IP
+G064 N001 A001  status 1, force armed, area 001
+G065 N000 A015  status 2, ready, area 015
+G065 N001 A001  status 2, exit delay, area 001
+G065 N003 A001  status 2, system in trouble, area 001
+G066 N002 A001  status 3, auto arm, area 001
+
+G004 N020 A001  non-reportable event, ??, area 001
+G012 N001 A001 *special arming, auto arming, area 001
+G064 N000 A015 *status 1, armed, area 015
+G065 N000 A015  status 2, ready, area 015
+G065 N003 A001  status 2, system in trouble, area 001

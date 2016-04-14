@@ -1,0 +1,180 @@
+
+# Instant Arm (Command: AA001I1234)
+G005 N001 A000: User Code entered on Keypad | User Code | Area 000
+G064 N003 A001: Status 1 | Instant Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+(30 seconds later...)
+G004 N002 A001: Non-reportable Event | Arm with no entry delay | Area 001
+G012 N004 A001: Special Arming | Partial Arming | Area 001
+G009 N001 A001: Arming with Master | User Code | Area 001
+G064 N000 A015: Status 1 | Armed | Area 015
+G064 N003 A001: Status 1 | Instant Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+
+# Alarm Triggered
+G001 N001 A001: Zone is Open | Zone Number | Area 001
+G024 N001 A001: Zone in Alarm | Zone Number | Area 001
+G0645N004A001
+G000 N001 A001: Zone is OK | Zone Number | Area 001
+
+# Disarm (Command: AD0011234)
+G005 N001 A000: User Code entered on Keypad | User Code | Area 000
+G026 N001 A001: Zone Alarm Restore | Zone Number | Area 001
+G019 N001 A001: Alarm Cancelled with Master | User Code | Area 001
+G016 N001 A001: Disarm after alarm with Master | User Code | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+G065 N004 A001: Status 2 | Alarm in  Memory | Area 001
+
+G005 N001 A000: User Code entered on Keypad | User Code | Area 000
+
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A002: Status 2 | Exit Delay | Area 002
+G065 N003 A002: Status 2 | System In Trouble | Area 002
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A003: Status 2 | Exit Delay | Area 003
+G065 N003 A003: Status 2 | System In Trouble | Area 003
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A004: Status 2 | Exit Delay | Area 004
+G065 N003 A004: Status 2 | System In Trouble | Area 004
+G009 N001 A001: Arming with Master | User Code | Area 001
+G064 N000 A015: Status 1 | Armed | Area 015
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+
+G009 N001 A002: Arming with Master | User Code | Area 002
+G009 N001 A003: Arming with Master | User Code | Area 003
+G009 N001 A004: Arming with Master | User Code | Area 004
+G064 N000 A015: Status 1 | Armed | Area 015
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A002: Status 2 | System In Trouble | Area 002
+G064 N000 A015: Status 1 | Armed | Area 015
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A003: Status 2 | System In Trouble | Area 003
+G064 N000 A015: Status 1 | Armed | Area 015
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A004: Status 2 | System In Trouble | Area 004
+
+
+# Disarm (Command: AD0011234)
+G005 N001 A000: User Code entered on Keypad | User Code | Area 000
+G013 N001 A001: Disarm with Master | User Code | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+
+G004 N020 A000: Non-reportable Event | Unknown | Area 000
+G004 N010 A000: Non-reportable Event | NEware User Login | Area 000
+G005 N001 A000: User Code entered on Keypad | User Code | Area 000
+
+G064 N001 A001: Status 1 | Force Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+G066 N002 A001: Status 3 | Auto Arm | Area 001
+G064 N003 A001: Status 1 | Instant Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+G066 N002 A001: Status 3 | Auto Arm | Area 001
+G004 N020 A001: Non-reportable Event | Unknown | Area 001
+G022 N000 A001: Special Disarm Events | Auto Arm Cancelled | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+
+G064 N003 A001: Status 1 | Instant Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+G066 N002 A001: Status 3 | Auto Arm | Area 001
+
+G001 N001 A001: Zone is Open | Zone Number | Area 001
+G000 N001 A001: Zone is OK | Zone Number | Area 001
+G001 N001 A001: Zone is Open | Zone Number | Area 001
+G000 N001 A001: Zone is OK | Zone Number | Area 001
+G001 N001 A001: Zone is Open | Zone Number | Area 001
+G000 N001 A001: Zone is OK | Zone Number | Area 001
+
+G064 N001 A001: Status 1 | Force Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+G066 N002 A001: Status 3 | Auto Arm | Area 001
+
+G004 N020 A001: Non-reportable Event | Unknown | Area 001
+G012 N001 A001: Special Arming | Arming by WinLoad | Area 001
+G064 N000 A015: Status 1 | Armed | Area 015
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+
+
+# Disarm (Command:AD0011234)
+G005 N001 A000: User Code entered on Keypad | User Code | Area 000
+G013 N001 A001: Disarm with Master | User Code | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+
+G064 N003 A001: Status 1 | Instant Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+G066 N002 A001: Status 3 | Auto Arm | Area 001
+
+G064 N002 A001: Status 1 | Stay Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+G066 N002 A001: Status 3 | Auto Arm | Area 001
+G004 N020 A001: Non-reportable Event | Unknown | Area 001
+G022 N000 A001: Special Disarm Events | Auto Arm Cancelled | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+
+G064 N002 A001: Status 1 | Stay Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+G066 N002 A001: Status 3 | Auto Arm | Area 001
+G004 N020 A001: Non-reportable Event | Unknown | Area 001
+G022 N000 A001: Special Disarm Events | Auto Arm Cancelled | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+
+G064 N003 A001: Status 1 | Instant Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+G066 N002 A001: Status 3 | Auto Arm | Area 001
+
+G004 N002 A001: Non-reportable Event | Arm with no entry delay | Area 001
+G012 N004 A001: Special Arming | Partial Arming | Area 001
+G004 N020 A001: Non-reportable Event | Unknown | Area 001
+G012 N001 A001: Special Arming | Arming by WinLoad | Area 001
+G064 N000 A015: Status 1 | Armed | Area 015
+G064 N003 A001: Status 1 | Instant Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+G004 N020 A001: Non-reportable Event | Unknown | Area 001
+G022 N002 A001: Special Disarm Events | Disarming with WinLoad | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+
+G064 N003 A001: Status 1 | Instant Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+G065 N003 A001: Status 2 | System In Trouble | Area 001
+G066 N002 A001: Status 3 | Auto Arm | Area 001
+
+G004 N002 A001: Non-reportable Event | Arm with no entry delay | Area 001
+G012 N004 A001: Special Arming | Partial Arming | Area 001
+G004 N020 A001: Non-reportable Event | Unknown | Area 001
+G012 N001 A001: Special Arming | Arming by WinLoad | Area 001
+G064 N000 A015: Status 1 | Armed | Area 015
+G064 N003 A001: Status 1 | Instant Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N003 A001: Status 2 | System In Trouble | Area 001
