@@ -273,16 +273,16 @@ module.exports = (output) => {
   console.log(`G${_g} N${_n} A${_a}: ${_gDesc} | ${_nDesc} | Area ${_a}`);
 
   // Output Notification that Matters
-  if (_g === '000') {
-    console.log(` # zone ${_n} in area ${_a} is OK.\n`);
-  } else if (_g === '001') {
-    console.log(` # zone ${_n} in area ${_a} is OPEN.\n`);
-  } else if (_g === '065') {
-    console.log(` # area ${_a} status: Exit Delay\n`);
-  } else if (_g === '009') {
-    console.log(` # area ${_a} is armed\n`);
-  } else if (_g === '') {
-
-  }
+  // if (_g === '000') {
+  //   console.log(` # zone ${_n} in area ${_a} is OK.\n`);
+  // } else if (_g === '001') {
+  //   console.log(` # zone ${_n} in area ${_a} is OPEN.\n`);
+  // } else if (_g === '065') {
+  //   console.log(` # area ${_a} status: Exit Delay\n`);
+  // } else if (_g === '009') {
+  //   console.log(` # area ${_a} is armed\n`);
+  // } else if (_g === '') {
+  //
+  // }
 
 };

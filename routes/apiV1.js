@@ -2,7 +2,7 @@
 
 const express    = require('express');
 const router     = express.Router();
-const serialport = require('serialport');
+const SerialPort = require('serialport');
 const serialSysEvent = require('./serialSystemEvents');
 const serialResponse = require('./serialResponse');
 
@@ -14,7 +14,7 @@ const config = {
   '004': []
 };
 
-const usbPort    = '/dev/tty.usbserial-a40069ba';
+const usbPort    = '/dev/tty.usbserial-a40069b4';
 const serialPass = '1234';
 const armCode    = 'A'; // A:Regular, F:Force, S:Stay, I:Instant
 const serialOpts = {
@@ -22,9 +22,9 @@ const serialOpts = {
                      dataBits: 8,
                      stopBits: 1,
                      parity: 'none',
-                     parser: serialport.parsers.readline('\r')
+                     parser: SerialPort.parsers.readline('\r')
                    };
-const serial     = new serialport.SerialPort(usbPort, serialOpts);
+const serial     = new SerialPort(usbPort, serialOpts);
 
 
 
@@ -85,6 +85,7 @@ router.get('/command/:command', (req, res, next) => {
 
 router.get('/area/status/:id', (req, res, next) => {
   const header = `RA${req.params.id}`;
+  console.log(`[dev] header: ${header}`);
   standardReadData(header, res);
   serial.write(`${header}\r`, standardWriteData);
 });

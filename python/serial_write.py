@@ -4,7 +4,7 @@
 import serial
 
 ser = serial.Serial(
-    port='/dev/tty.usbserial-a40069ba',
+    port='/dev/tty.usbserial-a40069b4',
     baudrate = 2400,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
