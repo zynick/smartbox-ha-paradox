@@ -4,61 +4,59 @@
 
 module.exports = (header, output) => {
 
-  const _header = output.substr(0, 5);
-  const command = output.substr(0, 2);
-  const result  = output.charAt(5) === '&' ? output.substr(6) : output.substr(5);
+    const _header = output.substr(0, 5);
+    const command = output.substr(0, 2);
+    const result = output.charAt(5) === '&' ? output.substr(6) : output.substr(5);
 
-  // Validations
-  if (header !== _header) { return; }
-  if (result === 'ok' || result === 'fail') {
-    return result;
-  }
+    // Validations
+    if (header !== _header) {
+        return;
+    }
+    if (result === 'ok' || result === 'fail') {
+        return result;
+    }
 
-  if (command === 'RA') {  // Request Area Status
+    // Request Area Status
+    if (command === 'RA') {
+        const status = result.charAt(0);
+        const statusDesc = {
+            'D': 'Disarmed',
+            'A': 'Armed',
+            'F': 'Force armed',
+            'S': 'Stay armed',
+            'I': 'Instant armed'
+        };
 
-    const status = result.charAt(0);
-    const statusDesc = {
-      'D': 'Disarmed',
-      'A': 'Armed',
-      'F': 'Force armed',
-      'S': 'Stay armed',
-      'I': 'Instant armed'
-    };
+        return {
+            status: `${status} - ${statusDesc[status]}`,
+            zoneInMemory: result.charAt(1) === 'M',
+            trouble: result.charAt(2) === 'T',
+            notReady: result.charAt(3) === 'N',
+            inProgramming: result.charAt(4) === 'P',
+            inAlarm: result.charAt(5) === 'A',
+            strobe: result.charAt(6) === 'S'
+        };
+    }
 
-    const json = {
-      status        : `${status} - ${statusDesc[status]}`,
-      zoneInMemory  : result.charAt(1) === 'M',
-      trouble       : result.charAt(2) === 'T',
-      notReady      : result.charAt(3) === 'N',
-      inProgramming : result.charAt(4) === 'P',
-      inAlarm       : result.charAt(5) === 'A',
-      strobe        : result.charAt(6) === 'S'
-    };
+    // Request Zone Status
+    if (command === 'RZ') {
+        const status = result.charAt(0);
+        const statusDesc = {
+            'C': 'Closed',
+            'O': 'Open',
+            'T': 'Tampered',
+            'F': 'Fire loop trouble'
+        };
 
-    return json;
+        return {
+            status: `${status} - ${statusDesc[status]}`,
+            inAlarm: result.charAt(1) === 'A',
+            fireAlarm: result.charAt(2) === 'F',
+            supervisionLost: result.charAt(3) === 'S',
+            lowBattery: result.charAt(4) === 'L'
+        };
+    }
 
-  } else if (command === 'RZ') { // Request Zone Status
-
-    const status = result.charAt(0);
-    const statusDesc = {
-      'C': 'Closed',
-      'O': 'Open',
-      'T': 'Tampered',
-      'F': 'Fire loop trouble'
-    };
-
-    const json = {
-      status          : `${status} - ${statusDesc[status]}`,
-      inAlarm         : result.charAt(1) === 'A',
-      fireAlarm       : result.charAt(2) === 'F',
-      supervisionLost : result.charAt(3) === 'S',
-      lowBattery      : result.charAt(4) === 'L'
-    };
-
-    return json;
-
-  }
-
-  return result.trim();
+    return result.trim();
 
 };
