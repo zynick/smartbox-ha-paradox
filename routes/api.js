@@ -3,8 +3,9 @@
 const express = require('express');
 const router = express.Router();
 const SerialPort = require('serialport');
-const serialInterpreter = require('./serialInterpreter');
-const serialResponse = require('./serialResponse');
+
+const serialInterpreter = require('./controller/serialInterpreter');
+const serialResponse = require('./controller/serialResponse');
 
 const SERIAL_PASS = '1234';
 const ARM_CODE = 'A'; // A:Regular, F:Force, S:Stay, I:Instant
@@ -39,6 +40,7 @@ let _readData = function(buffer) {
 };
 
 serial.on('data', _readData);
+
 
 
 /* General Functions */

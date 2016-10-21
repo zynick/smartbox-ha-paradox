@@ -8,27 +8,27 @@ const gDesc = {
   '002': 'Zone is Tampered',
   '003': 'Zone is in Fire Loop Trouble',
   '004': 'Non-reportable Event',
-  '005': 'User Code entered on Keypad',
+  '005': 'User Code Entered on Keypad',
   '006': 'User/Card Access on door',
   '007': 'Bypass Programming Access',
-  '009': 'Arming with Master',
-  '010': 'Arming with User Code',
-  '011': 'Arming with Keyswitch',
-  '012': 'Special Arming',
-  '013': 'Disarm with Master',
-  '014': 'Disarm with User Code',
-  '015': 'Disarm with Keyswitch',
-  '016': 'Disarm after alarm with Master',
-  '017': 'Disarm after alarm with User Code',
-  '018': 'Disarm after alarm with Keyswitch',
-  '019': 'Alarm Cancelled with Master',
-  '020': 'Alarm Cancelled with User Code',
-  '021': 'Alarm Cancelled with Keyswitch',
-  '022': 'Special Disarm Events',
+  '009': '___ Arming with Master',
+  '010': '___ Arming with User Code',
+  '011': '___ Arming with Keyswitch',
+  '012': '___ Special Arming',
+  '013': '___ Disarm with Master',
+  '014': '___ Disarm with User Code',
+  '015': '___ Disarm with Keyswitch',
+  '016': '___ Disarm after Alarm with Master',
+  '017': '___ Disarm after Alarm with User Code',
+  '018': '___ Disarm after Alarm with Keyswitch',
+  '019': '___ Alarm Cancelled with Master',
+  '020': '___ Alarm Cancelled with User Code',
+  '021': '___ Alarm Cancelled with Keyswitch',
+  '022': '___ Special Disarm Events',
   '023': 'Zone Bypassed',
-  '024': 'Zone in Alarm',
+  '024': '___ Zone in Alarm',
   '025': 'Fire Alarm',
-  '026': 'Zone Alarm Restore',
+  '026': '___ Zone Alarm Restore',
   '027': 'Fire Alarm Restore',
   '028': 'Early to Disarm by User',
   '029': 'Late to Disarm by User',
@@ -58,15 +58,18 @@ const gDesc = {
   '053': 'Door Left Open Restore',
   '054': 'Door Forced Open Restore',
   '055': 'Intellizone Triggered',
+  '056': 'Zone Excluded on Force Arming',
+  '057': 'Zone Went Back to Arm Status',
   '058': 'New Module Assigned on Combus',
   '059': 'Module Manually Removed From Combus',
   '060': 'Future Use',
   '061': 'Future Use',
   '062': 'Access Granted to User',
   '063': 'Access Denied to User',
-  '064': 'Status 1',
+  '064': '___ Status 1',
   '065': 'Status 2',
-  '066': 'Status 3'
+  '066': 'Status 3',
+  '067': 'Future Use'
 };
 
 const nDesc = {
@@ -216,14 +219,12 @@ const nDesc = {
   '053': 'Door Number',
   '054': 'Door Number',
   '055': 'Zone Number',
-  '058': {
-          '000': 'Module Address',
-          '255': 'Any Module'
-        },
-  '059': {
-          '000': 'Module Address',
-          '255': 'Any Module'
-        },
+  '056': 'Zone Number',
+  '057': 'Zone Number',
+  '058': 'Module Address',
+  '059': 'Module Address',
+  '060': 'Future Use',
+  '061': 'Future Use',
   '062': 'User Code',
   '063': 'User Code',
   '064': {
@@ -255,7 +256,8 @@ const nDesc = {
           '005': 'Zone Low Battery',
           '006': 'Fire Loop Trouble',
           '007': 'Zone Supervision Trouble'
-        }
+        },
+  '067': 'Future Use'
 };
 
 module.exports = (output) => {
@@ -267,6 +269,8 @@ module.exports = (output) => {
   let   _nDesc = nDesc[_g] || '*Unknown*';
   if (typeof(_nDesc) === 'object') {
     _nDesc = _nDesc[_n] || '*Unknown*';
+  } else {
+    _nDesc += ' ' + _n;
   }
 
   console.log(`G${_g} N${_n} A${_a}: ${_gDesc} | ${_nDesc} | Area ${_a}`);
