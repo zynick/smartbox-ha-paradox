@@ -2,6 +2,26 @@
 
 /* this should not be in routes directory. fix later */
 
+/**
+ * Alarm Type (www.paradox.com/Downloader/?ID=7504)
+ *
+ * Regular Arming:
+ *   This method is used for the everyday arming of your system.
+ *   All zones within the protected area must be closed to Regular arm the system.
+ *
+ * Stay Arming:
+ *   Stay arming will partially arm your system to permit you to remain in your home or office
+ *   by arming the outer zones (perimeter) of the protected area (i.e. doors and windows).
+ *
+ * Instant Arming:
+ *   This feature is the same as Stay arming except that there is no Entry Delay.
+ *   Therefore, any armed zone that is breached will immediately generate an alarm.
+ *
+ * Force Arming:
+ *   Force arming allows you to quickly arm your system when zones are open.
+ *   However, once the open zone is closed, your system will then arm that zone as well.
+ */
+
 module.exports = (header, output) => {
 
     const _header = output.substr(0, 5);
