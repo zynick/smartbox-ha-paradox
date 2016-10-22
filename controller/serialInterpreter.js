@@ -260,7 +260,7 @@ const nDesc = {
     '067': 'Future Use'
 };
 
-module.exports = (output) => {
+module.exports = (output, done) => {
     const _g = output.substr(1, 3);
     const _n = output.substr(5, 3);
     const _a = output.substr(9, 3);
@@ -277,4 +277,8 @@ module.exports = (output) => {
     }
 
     debug(`G${_g} N${_n} A${_a}: ${_gDesc} | ${_nDesc} | Area ${_a}`);
+
+    if (done) {
+        return done();
+    }
 };

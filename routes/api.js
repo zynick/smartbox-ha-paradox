@@ -8,7 +8,7 @@ const SerialPort = require('serialport');
 const router = express.Router();
 
 const serialInterpreter = require('../controller/serialInterpreter');
-const serialResponse = require('../controller/serialResponse');
+const serialResponder = require('../controller/serialResponder');
 
 const SERIAL_PASS = '1234';
 const ARM_CODE = 'A'; // A:Regular, F:Force, S:Stay, I:Instant
@@ -27,11 +27,11 @@ const ARM_CODE = 'A'; // A:Regular, F:Force, S:Stay, I:Instant
 const mqtt = require('mqtt');
 const client = mqtt.connect('mqtt://localhost');
 
-// mqtt status: disarmed | armed_home | armed_away | pending | triggered
+// MQTT Status: disarmed | armed_home | armed_away | pending | triggered
 // https://home-assistant.io/components/alarm_control_panel.mqtt/
 let lastStatus;
 
-// paradox area state - 8 zones
+// Paradox Area State - 8 Zones
 let state = [false, false, false, false, false, false, false, false];
 
 client.on('connect', () => {
@@ -199,12 +199,12 @@ let _readData = (buffer) => {
 
     if (output.length === 12 && output.charAt(0) === 'G' &&
         output.charAt(4) === 'N' && output.charAt(8) === 'A') {
-        serialInterpreter(output);  // TODO async TODO TODO TODO TODO
+        serialInterpreter(output);
         trigger(output);
-        return;
+    } else {
+        debug(`unknown data received: ${output}`);
     }
 
-    debug(`unknown data received: ${output}`);
 };
 
 serial.on('data', _readData);
@@ -217,7 +217,7 @@ function read(input, res) {
 
     serial.removeListener('data', _readData);
 
-    _readData = function(buffer) {
+    _readData = (buffer) => {
 
         const output = buffer.toString();
 
@@ -225,13 +225,12 @@ function read(input, res) {
             output.charAt(4) === 'N' && output.charAt(8) === 'A') {
             serialInterpreter(output);
             trigger(output);
-            return;
+        } else {
+            debug(`unknown data received: ${output}`);
         }
 
-        debug(`unknown data received: ${output}`);
-
         if (!res.headerSent) {
-            const result = serialResponse(input, output);  // TODO async
+            const result = serialResponder(input, output);
             if (result) {
                 res.json(result);
             }
@@ -244,7 +243,7 @@ function read(input, res) {
 function write(res) {
     return (err) => {
         if (err) {
-            error('ERROR', err);
+            error(err.message);
             if (!res.headerSent) {
                 res.send(err);
             }
@@ -255,96 +254,96 @@ function write(res) {
 
 /* Standard Command */
 
-router.get('/command/:command', (req, res, next) => {
+router.get('/command/:command', (req, res) => {
     const command = req.params.command;
     read(command.substr(0, 5), res);
-    serial.write(`${command}\r`, write);
+    serial.write(`${command}\r`, write(res));
 });
 
 /* Area */
 
-router.get('/area/status/:id', (req, res, next) => {
+router.get('/area/status/:id', (req, res) => {
     const input = `RA${req.params.id}`;
     read(input, res);
-    serial.write(`${input}\r`, write);
+    serial.write(`${input}\r`, write(res));
 });
 
-router.get('/area/label/:id', (req, res, next) => {
+router.get('/area/label/:id', (req, res) => {
     const input = `AL${req.params.id}`;
     read(input, res);
-    serial.write(`${input}\r`, write);
+    serial.write(`${input}\r`, write(res));
 });
 
-router.get('/area/arm/:id', (req, res, next) => {
+router.get('/area/arm/:id', (req, res) => {
     const input = `AA${req.params.id}`;
     read(input, res);
-    serial.write(`${input}${ARM_CODE}${SERIAL_PASS}\r`, write);
+    serial.write(`${input}${ARM_CODE}${SERIAL_PASS}\r`, write(res));
 });
 
-router.get('/area/quickarm/:id', (req, res, next) => {
+router.get('/area/quickarm/:id', (req, res) => {
     const input = `AQ${req.params.id}`;
     read(input, res);
-    serial.write(`${input}${ARM_CODE}${SERIAL_PASS}\r`, write);
+    serial.write(`${input}${ARM_CODE}${SERIAL_PASS}\r`, write(res));
 });
 
-router.get('/area/disarm/:id', (req, res, next) => {
+router.get('/area/disarm/:id', (req, res) => {
     const input = `AD${req.params.id}`;
     read(input, res);
-    serial.write(`${input}${SERIAL_PASS}\r`, write);
+    serial.write(`${input}${SERIAL_PASS}\r`, write(res));
 });
 
-router.get('/area/panic/emergency/:id', (req, res, next) => {
+router.get('/area/panic/emergency/:id', (req, res) => {
     const input = `PE${req.params.id}`;
     read(input, res);
-    serial.write(`${input}\r`, write);
+    serial.write(`${input}\r`, write(res));
 });
 
-router.get('/area/panic/medical/:id', (req, res, next) => {
+router.get('/area/panic/medical/:id', (req, res) => {
     const input = `PM${req.params.id}`;
     read(input, res);
-    serial.write(`${input}\r`, write);
+    serial.write(`${input}\r`, write(res));
 });
 
-router.get('/area/panic/fire/:id', (req, res, next) => {
+router.get('/area/panic/fire/:id', (req, res) => {
     const input = `PF${req.params.id}`;
     read(input, res);
-    serial.write(`${input}\r`, write);
+    serial.write(`${input}\r`, write(res));
 });
 
-router.get('/area/smoke/reset/:id', (req, res, next) => {
+router.get('/area/smoke/reset/:id', (req, res) => {
     const input = `SR${req.params.id}`;
     read(input, res);
-    serial.write(`${input}\r`, write);
+    serial.write(`${input}\r`, write(res));
 });
 
 /* Zone */
 
-router.get('/zone/status/:id', (req, res, next) => {
+router.get('/zone/status/:id', (req, res) => {
     const input = `RZ${req.params.id}`;
     read(input, res);
-    serial.write(`${input}\r`, write);
+    serial.write(`${input}\r`, write(res));
 });
 
-router.get('/zone/label/:id', (req, res, next) => {
+router.get('/zone/label/:id', (req, res) => {
     const input = `ZL${req.params.id}`;
     read(input, res);
-    serial.write(`${input}\r`, write);
+    serial.write(`${input}\r`, write(res));
 });
 
 /* User */
 
-router.get('/user/label/:id', (req, res, next) => {
+router.get('/user/label/:id', (req, res) => {
     const input = `UL${req.params.id}`;
     read(input, res);
-    serial.write(`${input}\r`, write);
+    serial.write(`${input}\r`, write(res));
 });
 
-/* Utility */
+/* Utility Keys */
 
-router.get('/utility/:id', (req, res, next) => {
+router.get('/utility/:id', (req, res) => {
     const input = `UK${req.params.id}`;
     read(input, res);
-    serial.write(`${input}\r`, write);
+    serial.write(`${input}\r`, write(res));
 });
 
 

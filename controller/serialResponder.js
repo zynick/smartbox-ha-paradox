@@ -1,7 +1,5 @@
 'use strict';
 
-/* this should not be in routes directory. fix later */
-
 /**
  * Alarm Type (www.paradox.com/Downloader/?ID=7504)
  *
@@ -28,10 +26,12 @@ module.exports = (input, output) => {
     const command = output.substr(0, 2);
     const result = output.charAt(5) === '&' ? output.substr(6) : output.substr(5);
 
-    // Validations
+    // Validation
     if (input !== _header) {
         return;
     }
+
+    // Simple Response - Return Straight Away
     if (result === 'ok' || result === 'fail') {
         return result;
     }
@@ -77,6 +77,7 @@ module.exports = (input, output) => {
         };
     }
 
+    // Others Command
     return result.trim();
 
 };
