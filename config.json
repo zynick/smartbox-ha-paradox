@@ -1,4 +1,11 @@
 {
-    "serialUserCode": "1234",
-    "usbPort": "/dev/tty.usbserial-a40069b4"
+    "homeAssistant": {
+        "mqttURL": "mqtt://localhost",
+        "mqttStateTopic": "smartbox/alarm",
+        "mqttCommandTopic": "smartbox/alarm/set"
+    },
+    "paradox": {
+        "serialPort": "/dev/tty.usbserial-a40069b4",
+        "serialUserCode": "1234"
+    }
 }

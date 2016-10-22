@@ -11,7 +11,7 @@ const serialResponder = require('../controller/serialResponder');
 
 const router = express.Router();
 
-const SERIAL_USER_CODE = config.serialUserCode;
+const SERIAL_USER_CODE = config.paradox.serialUserCode;
 const ARM_CODE = 'A'; // A:Regular, F:Force, S:Stay, I:Instant
 
 
@@ -24,7 +24,9 @@ const ARM_CODE = 'A'; // A:Regular, F:Force, S:Stay, I:Instant
 /* TODO move this shit out to some where else */
 
 const mqtt = require('mqtt');
-const client = mqtt.connect('mqtt://localhost');
+const client = mqtt.connect(config.homeAssistant.mqttURL);
+const stateTopic = config.homeAssistant.mqttStateTopic;
+const commandTopic = config.homeAssistant.mqttCommandTopic;
 
 // MQTT Status: disarmed | armed_home | armed_away | pending | triggered
 // https://home-assistant.io/components/alarm_control_panel.mqtt/
@@ -35,8 +37,8 @@ let state = [false, false, false, false, false, false, false, false];
 
 client.on('connect', () => {
     debug('mqtt connected.');
-    client.subscribe('smartbox/alarm');
-    client.subscribe('smartbox/alarm/set');
+    client.subscribe(stateTopic);
+    client.subscribe(commandTopic);
 });
 
 function serial_REFACTOR_ME(err) {
@@ -50,12 +52,12 @@ client.on('message', (topic, buffer) => {
     debug(`mqtt topic: ${topic}, message: ${message}`);
 
     // process received message
-    if (topic === 'smartbox/alarm') {
+    if (topic === stateTopic) {
         lastStatus = message;
         return;
     }
 
-    if (topic === 'smartbox/alarm/set') {
+    if (topic === commandTopic) {
         if (message === 'DISARM') {
             const command = `AD001${SERIAL_USER_CODE}\r` +
                 `AD002${SERIAL_USER_CODE}\r` +
@@ -66,7 +68,7 @@ client.on('message', (topic, buffer) => {
                 `AD007${SERIAL_USER_CODE}\r` +
                 `AD008${SERIAL_USER_CODE}\r`;
             serial.write(command, serial_REFACTOR_ME);
-            // client.publish('smartbox/alarm', 'pending'); // TODO should i enable this?
+            // client.publish(stateTopic, 'pending'); // TODO should i enable this? need to do something with the response
             return;
         }
 
@@ -80,7 +82,7 @@ client.on('message', (topic, buffer) => {
                 `AA007S${SERIAL_USER_CODE}\r` +
                 `AA008S${SERIAL_USER_CODE}\r`;
             serial.write(command, serial_REFACTOR_ME);
-            // client.publish('smartbox/alarm', 'pending'); // TODO should i enable this?
+            // client.publish(stateTopic, 'pending'); // TODO should i enable this? need to do something with the response
             return;
         }
 
@@ -94,7 +96,7 @@ client.on('message', (topic, buffer) => {
                 `AA007A${SERIAL_USER_CODE}\r` +
                 `AA008A${SERIAL_USER_CODE}\r`;
             serial.write(command, serial_REFACTOR_ME);
-            // client.publish('smartbox/alarm', 'pending'); // TODO should i enable this?
+            // client.publish(stateTopic, 'pending'); // TODO should i enable this? need to do something with the response
             return;
         }
         return;
@@ -109,7 +111,7 @@ function trigger(output) {
         case '010': // Arming with User Code
         case '011': // Arming with Keyswitch
         case '012': // Special Arming
-            client.publish('smartbox/alarm', 'armed_away');
+            client.publish(stateTopic, 'armed_away');
             break;
 
         case '064': // Status 1
@@ -118,11 +120,11 @@ function trigger(output) {
                 switch (_n) {
                     case '000': // Armed
                     case '001': // Force Armed
-                        client.publish('smartbox/alarm', 'armed_away');
+                        client.publish(stateTopic, 'armed_away');
                         break;
                     case '002': // Stay Armed
                     case '003': // Instant Armed
-                        client.publish('smartbox/alarm', 'armed_home');
+                        client.publish(stateTopic, 'armed_home');
                         break;
                 }
             }
@@ -138,14 +140,14 @@ function trigger(output) {
         case '019': // Alarm Cancelled with Master'
         case '020': // Alarm Cancelled with User Code'
         case '021': // Alarm Cancelled with Keyswitch'
-            client.publish('smartbox/alarm', 'disarmed');
+            client.publish(stateTopic, 'disarmed');
             break;
 
         case '024': // Zone in Alarm
             _a = output.substr(9, 3);
             _a = parseInt(_a);
             state[_a - 1] = true;
-            client.publish('smartbox/alarm', 'triggered');
+            client.publish(stateTopic, 'triggered');
             break;
 
         case '026': // Zone Alarm Restore
@@ -158,14 +160,14 @@ function trigger(output) {
             }
 
             if (isAllAlarmOff()) {
-                client.publish('smartbox/alarm', 'disarmed');
+                client.publish(stateTopic, 'disarmed');
             }
             break;
 
         case '065': // Status 2
             _n = output.substr(5, 3);
             if (_n === '001') { // Exit Delay
-                client.publish('smartbox/alarm', 'pending');
+                client.publish(stateTopic, 'pending');
             }
             break;
     }
@@ -179,6 +181,7 @@ function trigger(output) {
 
 /* Initialize Serial */
 
+const serialPort = config.paradox.serialPort;
 const serialOptions = {
     baudrate: 2400,
     dataBits: 8,
@@ -186,7 +189,7 @@ const serialOptions = {
     parity: 'none',
     parser: SerialPort.parsers.readline('\r')
 };
-const serial = new SerialPort(config.usbPort, serialOptions);
+const serial = new SerialPort(serialPort, serialOptions);
 
 serial.on('open', () => {
     debug('serial port connected.');
