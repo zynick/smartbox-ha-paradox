@@ -1,0 +1,65 @@
+(recorded @ 2016-10-21)
+
+# Open / Close Zone 1
+G001 N001 A001: Zone is Open | Zone Number 001 | Area 001
+G000 N001 A001: Zone is OK | Zone Number 001 | Area 001
+
+# Open / Close Zone 2
+G001 N002 A001: Zone is Open | Zone Number 002 | Area 001
+G000 N002 A001: Zone is OK | Zone Number 002 | Area 001
+
+# Arming (Exit Delaying..)
+G005 N001 A000: User Code entered on Keypad | User Code 001 | Area 000
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+
+# Armed
+* G009 N001 A001: Arming with Master | User Code 001 | Area 001
+* G064 N000 A015: Status 1 | Armed | Area 015
+G065 N000 A015: Status 2 | Ready | Area 015
+
+# Zone Open, Alarm Triggered
+G001 N001 A001: Zone is Open | Zone Number 001 | Area 001
+* G024 N001 A001: Zone in Alarm | Zone Number 001 | Area 001
+* G064 N000 A015: Status 1 | Armed | Area 015
+G064 N004 A001: Status 1 | Strobe Alarm | Area 001
+G064 N006 A001: Status 1 | Audible Alarm | Area 001
+G065 N004 A001: Status 2 | Alarm in  Memory | Area 001
+
+# Close Zone, but Alarm Continue to Sound
+G000 N001 A001: Zone is OK | Zone Number 001 | Area 001
+
+# Disarmed by Keypad
+G005 N001 A000: User Code entered on Keypad | User Code 001 | Area 000
+* G026 N001 A001: Zone Alarm Restore | Zone Number 001 | Area 001
+* G019 N001 A001: Alarm Cancelled with Master | User Code 001 | Area 001
+* G016 N001 A001: Disarm after alarm with Master | User Code 001 | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N004 A001: Status 2 | Alarm in  Memory | Area 001
+
+##################################################
+
+# Force Arming (Exit Delaying...)
+G005 N001 A000: User Code entered on Keypad | User Code 001 | Area 000
+G064 N001 A001: Status 1 | Force Armed | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
+G065 N001 A001: Status 2 | Exit Delay | Area 001
+
+# Force Armed
+* G009 N001 A001: Arming with Master | User Code 001 | Area 001
+* G064 N000 A015: Status 1 | Armed | Area 015
+G065 N000 A015: Status 2 | Ready | Area 015
+
+# Zone Open, Alarm Triggered
+G001 N002 A001: Zone is Open | Zone Number 002 | Area 001
+G064 N000 A015: Status 1 | Armed | Area 015
+G065 N002 A001: Status 2 | Entry Delay | Area 001
+
+G000 N002 A001: Zone is OK | Zone Number 002 | Area 001
+G001 N002 A001: Zone is Open | Zone Number 002 | Area 001
+G000 N002 A001: Zone is OK | Zone Number 002 | Area 001
+
+# Disarmed by Keypad
+G005 N001 A000: User Code entered on Keypad | User Code 001 | Area 000
+* G013 N001 A001: Disarm with Master | User Code 001 | Area 001
+G065 N000 A015: Status 2 | Ready | Area 015
