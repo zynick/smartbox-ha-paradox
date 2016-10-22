@@ -5,15 +5,14 @@ const error = require('debug')('app:error');
 const express = require('express');
 const SerialPort = require('serialport');
 
-const router = express.Router();
-
+const config = require('../config.json');
 const serialInterpreter = require('../controller/serialInterpreter');
 const serialResponder = require('../controller/serialResponder');
 
-const SERIAL_PASS = '1234';
+const router = express.Router();
+
+const SERIAL_USER_CODE = config.serialUserCode;
 const ARM_CODE = 'A'; // A:Regular, F:Force, S:Stay, I:Instant
-
-
 
 
 
@@ -58,42 +57,42 @@ client.on('message', (topic, buffer) => {
 
     if (topic === 'smartbox/alarm/set') {
         if (message === 'DISARM') {
-            const command = `AD001${SERIAL_PASS}\r` +
-                `AD002${SERIAL_PASS}\r` +
-                `AD003${SERIAL_PASS}\r` +
-                `AD004${SERIAL_PASS}\r` +
-                `AD005${SERIAL_PASS}\r` +
-                `AD006${SERIAL_PASS}\r` +
-                `AD007${SERIAL_PASS}\r` +
-                `AD008${SERIAL_PASS}\r`;
+            const command = `AD001${SERIAL_USER_CODE}\r` +
+                `AD002${SERIAL_USER_CODE}\r` +
+                `AD003${SERIAL_USER_CODE}\r` +
+                `AD004${SERIAL_USER_CODE}\r` +
+                `AD005${SERIAL_USER_CODE}\r` +
+                `AD006${SERIAL_USER_CODE}\r` +
+                `AD007${SERIAL_USER_CODE}\r` +
+                `AD008${SERIAL_USER_CODE}\r`;
             serial.write(command, serial_REFACTOR_ME);
             // client.publish('smartbox/alarm', 'pending'); // TODO should i enable this?
             return;
         }
 
         if (message === 'ARM_HOME') {
-            const command = `AA001S${SERIAL_PASS}\r` +
-                `AA002S${SERIAL_PASS}\r` +
-                `AA003S${SERIAL_PASS}\r` +
-                `AA004S${SERIAL_PASS}\r` +
-                `AA005S${SERIAL_PASS}\r` +
-                `AA006S${SERIAL_PASS}\r` +
-                `AA007S${SERIAL_PASS}\r` +
-                `AA008S${SERIAL_PASS}\r`;
+            const command = `AA001S${SERIAL_USER_CODE}\r` +
+                `AA002S${SERIAL_USER_CODE}\r` +
+                `AA003S${SERIAL_USER_CODE}\r` +
+                `AA004S${SERIAL_USER_CODE}\r` +
+                `AA005S${SERIAL_USER_CODE}\r` +
+                `AA006S${SERIAL_USER_CODE}\r` +
+                `AA007S${SERIAL_USER_CODE}\r` +
+                `AA008S${SERIAL_USER_CODE}\r`;
             serial.write(command, serial_REFACTOR_ME);
             // client.publish('smartbox/alarm', 'pending'); // TODO should i enable this?
             return;
         }
 
         if (message === 'ARM_AWAY') {
-            const command = `AA001A${SERIAL_PASS}\r` +
-                `AA002A${SERIAL_PASS}\r` +
-                `AA003A${SERIAL_PASS}\r` +
-                `AA004A${SERIAL_PASS}\r` +
-                `AA005A${SERIAL_PASS}\r` +
-                `AA006A${SERIAL_PASS}\r` +
-                `AA007A${SERIAL_PASS}\r` +
-                `AA008A${SERIAL_PASS}\r`;
+            const command = `AA001A${SERIAL_USER_CODE}\r` +
+                `AA002A${SERIAL_USER_CODE}\r` +
+                `AA003A${SERIAL_USER_CODE}\r` +
+                `AA004A${SERIAL_USER_CODE}\r` +
+                `AA005A${SERIAL_USER_CODE}\r` +
+                `AA006A${SERIAL_USER_CODE}\r` +
+                `AA007A${SERIAL_USER_CODE}\r` +
+                `AA008A${SERIAL_USER_CODE}\r`;
             serial.write(command, serial_REFACTOR_ME);
             // client.publish('smartbox/alarm', 'pending'); // TODO should i enable this?
             return;
@@ -180,7 +179,6 @@ function trigger(output) {
 
 /* Initialize Serial */
 
-const usbPort = '/dev/tty.usbserial-a40069b4';
 const serialOptions = {
     baudrate: 2400,
     dataBits: 8,
@@ -188,7 +186,7 @@ const serialOptions = {
     parity: 'none',
     parser: SerialPort.parsers.readline('\r')
 };
-const serial = new SerialPort(usbPort, serialOptions);
+const serial = new SerialPort(config.usbPort, serialOptions);
 
 serial.on('open', () => {
     debug('serial port connected.');
@@ -277,19 +275,19 @@ router.get('/area/label/:id', (req, res) => {
 router.get('/area/arm/:id', (req, res) => {
     const input = `AA${req.params.id}`;
     read(input, res);
-    serial.write(`${input}${ARM_CODE}${SERIAL_PASS}\r`, write(res));
+    serial.write(`${input}${ARM_CODE}${SERIAL_USER_CODE}\r`, write(res));
 });
 
 router.get('/area/quickarm/:id', (req, res) => {
     const input = `AQ${req.params.id}`;
     read(input, res);
-    serial.write(`${input}${ARM_CODE}${SERIAL_PASS}\r`, write(res));
+    serial.write(`${input}${ARM_CODE}${SERIAL_USER_CODE}\r`, write(res));
 });
 
 router.get('/area/disarm/:id', (req, res) => {
     const input = `AD${req.params.id}`;
     read(input, res);
-    serial.write(`${input}${SERIAL_PASS}\r`, write(res));
+    serial.write(`${input}${SERIAL_USER_CODE}\r`, write(res));
 });
 
 router.get('/area/panic/emergency/:id', (req, res) => {
