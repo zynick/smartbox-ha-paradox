@@ -22,14 +22,14 @@
  *   However, once the open zone is closed, your system will then arm that zone as well.
  */
 
-module.exports = (header, output) => {
+module.exports = (input, output) => {
 
     const _header = output.substr(0, 5);
     const command = output.substr(0, 2);
     const result = output.charAt(5) === '&' ? output.substr(6) : output.substr(5);
 
     // Validations
-    if (header !== _header) {
+    if (input !== _header) {
         return;
     }
     if (result === 'ok' || result === 'fail') {
