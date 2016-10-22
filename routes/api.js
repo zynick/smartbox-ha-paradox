@@ -1,8 +1,11 @@
 'use strict';
 
+const debug = require('debug')('app:api');
+const error = require('debug')('app:error');
 const express = require('express');
-const router = express.Router();
 const SerialPort = require('serialport');
+
+const router = express.Router();
 
 const serialInterpreter = require('../controller/serialInterpreter');
 const serialResponse = require('../controller/serialResponse');
@@ -24,72 +27,78 @@ const ARM_CODE = 'A'; // A:Regular, F:Force, S:Stay, I:Instant
 const mqtt = require('mqtt');
 const client = mqtt.connect('mqtt://localhost');
 
-let lastState;
+// mqtt status: disarmed | armed_home | armed_away | pending | triggered
+// https://home-assistant.io/components/alarm_control_panel.mqtt/
+let lastStatus;
+
+// paradox area state - 8 zones
 let state = [false, false, false, false, false, false, false, false];
 
 client.on('connect', () => {
-    console.log('mqtt connected.');
+    debug('mqtt connected.');
     client.subscribe('smartbox/alarm');
     client.subscribe('smartbox/alarm/set');
 });
 
 function serial_REFACTOR_ME(err) {
     if (err) {
-        console.log('error:', err.message);
+        error(err.message);
     }
 }
 
-client.on('message', (topic, message) => {
-    message = message.toString();
-    console.log(`mqtt topic: ${topic}, message: ${message}`);
+client.on('message', (topic, buffer) => {
+    const message = buffer.toString();
+    debug(`mqtt topic: ${topic}, message: ${message}`);
+
     // process received message
     if (topic === 'smartbox/alarm') {
-        lastState = message;
-    } else if (topic === 'smartbox/alarm/set') {
-        let command;
-        switch (message) {
-            case 'DISARM':
-                command = `AD001${SERIAL_PASS}\r` +
-                    `AD002${SERIAL_PASS}\r` +
-                    `AD003${SERIAL_PASS}\r` +
-                    `AD004${SERIAL_PASS}\r` +
-                    `AD005${SERIAL_PASS}\r` +
-                    `AD006${SERIAL_PASS}\r` +
-                    `AD007${SERIAL_PASS}\r` +
-                    `AD008${SERIAL_PASS}\r`;
-                serial.write(command, serial_REFACTOR_ME);
-                // client.publish('smartbox/alarm', 'pending');
-                break;
+        lastStatus = message;
+        return;
+    }
 
-            case 'ARM_HOME':
-                command = `AA001S${SERIAL_PASS}\r` +
-                    `AA002S${SERIAL_PASS}\r` +
-                    `AA003S${SERIAL_PASS}\r` +
-                    `AA004S${SERIAL_PASS}\r` +
-                    `AA005S${SERIAL_PASS}\r` +
-                    `AA006S${SERIAL_PASS}\r` +
-                    `AA007S${SERIAL_PASS}\r` +
-                    `AA008S${SERIAL_PASS}\r`;
-                serial.write(command, serial_REFACTOR_ME);
-                // client.publish('smartbox/alarm', 'pending');
-                break;
-
-            case 'ARM_AWAY':
-                command = `AA001A${SERIAL_PASS}\r` +
-                    `AA002A${SERIAL_PASS}\r` +
-                    `AA003A${SERIAL_PASS}\r` +
-                    `AA004A${SERIAL_PASS}\r` +
-                    `AA005A${SERIAL_PASS}\r` +
-                    `AA006A${SERIAL_PASS}\r` +
-                    `AA007A${SERIAL_PASS}\r` +
-                    `AA008A${SERIAL_PASS}\r`;
-                serial.write(command, serial_REFACTOR_ME);
-                // client.publish('smartbox/alarm', 'pending');
-                break;
-
-            default:
-                console.log(`omgwtfbbq? topic: ${topic}, message: ${message}`);
+    if (topic === 'smartbox/alarm/set') {
+        if (message === 'DISARM') {
+            const command = `AD001${SERIAL_PASS}\r` +
+                `AD002${SERIAL_PASS}\r` +
+                `AD003${SERIAL_PASS}\r` +
+                `AD004${SERIAL_PASS}\r` +
+                `AD005${SERIAL_PASS}\r` +
+                `AD006${SERIAL_PASS}\r` +
+                `AD007${SERIAL_PASS}\r` +
+                `AD008${SERIAL_PASS}\r`;
+            serial.write(command, serial_REFACTOR_ME);
+            // client.publish('smartbox/alarm', 'pending'); // TODO should i enable this?
+            return;
         }
+
+        if (message === 'ARM_HOME') {
+            const command = `AA001S${SERIAL_PASS}\r` +
+                `AA002S${SERIAL_PASS}\r` +
+                `AA003S${SERIAL_PASS}\r` +
+                `AA004S${SERIAL_PASS}\r` +
+                `AA005S${SERIAL_PASS}\r` +
+                `AA006S${SERIAL_PASS}\r` +
+                `AA007S${SERIAL_PASS}\r` +
+                `AA008S${SERIAL_PASS}\r`;
+            serial.write(command, serial_REFACTOR_ME);
+            // client.publish('smartbox/alarm', 'pending'); // TODO should i enable this?
+            return;
+        }
+
+        if (message === 'ARM_AWAY') {
+            const command = `AA001A${SERIAL_PASS}\r` +
+                `AA002A${SERIAL_PASS}\r` +
+                `AA003A${SERIAL_PASS}\r` +
+                `AA004A${SERIAL_PASS}\r` +
+                `AA005A${SERIAL_PASS}\r` +
+                `AA006A${SERIAL_PASS}\r` +
+                `AA007A${SERIAL_PASS}\r` +
+                `AA008A${SERIAL_PASS}\r`;
+            serial.write(command, serial_REFACTOR_ME);
+            // client.publish('smartbox/alarm', 'pending'); // TODO should i enable this?
+            return;
+        }
+        return;
     }
 });
 
@@ -105,17 +114,17 @@ function trigger(output) {
             break;
 
         case '064': // Status 1
-            if (lastState !== 'triggered') {
+            if (lastStatus !== 'triggered') {
                 _n = output.substr(5, 3);
                 switch (_n) {
                     case '000': // Armed
                     case '001': // Force Armed
-                    client.publish('smartbox/alarm', 'armed_away');
-                    break;
+                        client.publish('smartbox/alarm', 'armed_away');
+                        break;
                     case '002': // Stay Armed
                     case '003': // Instant Armed
-                    client.publish('smartbox/alarm', 'armed_home');
-                    break;
+                        client.publish('smartbox/alarm', 'armed_home');
+                        break;
                 }
             }
             break;
@@ -182,7 +191,7 @@ const serialOptions = {
 const serial = new SerialPort(usbPort, serialOptions);
 
 serial.on('open', () => {
-    console.log('serial port connected.');
+    debug('serial port connected.');
 });
 
 let _readData = (buffer) => {
@@ -190,12 +199,12 @@ let _readData = (buffer) => {
 
     if (output.length === 12 && output.charAt(0) === 'G' &&
         output.charAt(4) === 'N' && output.charAt(8) === 'A') {
-        serialInterpreter(output);
+        serialInterpreter(output);  // TODO async TODO TODO TODO TODO
         trigger(output);
         return;
     }
 
-    console.log('data received', output.length, output);
+    debug(`unknown data received: ${output}`);
 };
 
 serial.on('data', _readData);
@@ -219,17 +228,14 @@ function read(input, res) {
             return;
         }
 
-        console.log('data received', output.length, output);
+        debug(`unknown data received: ${output}`);
 
-        if (res.headerSent) {
-            return;
+        if (!res.headerSent) {
+            const result = serialResponse(input, output);  // TODO async
+            if (result) {
+                res.json(result);
+            }
         }
-
-        const result = serialResponse(input, output);
-        if (result) {
-            res.json(result);
-        }
-
     };
 
     serial.on('data', _readData);
@@ -238,7 +244,7 @@ function read(input, res) {
 function write(res) {
     return (err) => {
         if (err) {
-            console.log('ERROR', err);
+            error('ERROR', err);
             if (!res.headerSent) {
                 res.send(err);
             }

@@ -1,9 +1,9 @@
 {
-  "name": "serialAPI",
+  "name": "HA-Paradox",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "DEBUG=serialAPI:* npm start",
+    "dev": "DEBUG=app:* npm start",
     "start": "node ./bin/www"
   },
   "dependencies": {
@@ -14,7 +14,6 @@
     "jade": "~1.11.0",
     "morgan": "~1.6.1",
     "mqtt": "^2.0.1",
-    "serialport": "^4.0.3",
-    "serve-favicon": "~2.3.0"
+    "serialport": "^4.0.3"
   }
 }
