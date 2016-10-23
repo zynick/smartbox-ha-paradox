@@ -21,7 +21,7 @@ module.exports = (serial, mqtt) => {
     }));
     app.use(cookieParser());
     app.use('/', require('./routes/index'));
-    app.use('/api', require('./routes/api')(serial, mqtt)); // TODO temporary remove
+    app.use('/api', require('./routes/api')(serial, mqtt));
 
 
     /* Catch 404 and Forward to Error Handler */

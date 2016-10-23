@@ -5,98 +5,112 @@ const error = require('debug')('app:error');
 const express = require('express');
 const SerialPort = require('serialport');
 const router = express.Router();
-const serialInterpreter = require('../controller/serialInterpreter');
+
+const serialInterpreter = process.env.NODE_ENV === 'production' ?
+                            require('../controller/serialInterpreter') :
+                            () => { return; };  // ignore this function in production
 const serialResponder = require('../controller/serialResponder');
 
+const config = require('../config.json');
 const {
-    homeAssistant,
-    paradox
-} = require('../config.json');
-const {
-    STATE_TOPIC,
-    COMMAND_TOPIC
-} = homeAssistant.mqtt;
-const USER_CODE = paradox.serial.userCode;
-const ARM_CODE = 'A'; // A:Regular, F:Force, S:Stay, I:Instant
+    stateTopic,
+    commandTopic
+} = config.homeAssistant.mqtt;
+const userCode = config.paradox.serial.userCode;
+const armCode = 'A'; // A:Regular, F:Force, S:Stay, I:Instant
 
 
 module.exports = (serial, mqtt) => {
 
+    /**
+     * Gave up splitting them into separate component.
+     * Perhaps it's better to keep them in a file for simplicity.
+     * Will only work on this if I have more time.
+     */
 
-    /* TODO move this shit out to some where else */
-    /* TODO move this shit out to some where else */
-    /* TODO move this shit out to some where else */
+
+
+    /**
+     * Input From HA (MQTT) --> Paradox (Serial)
+     */
 
     // MQTT Status: disarmed | armed_home | armed_away | pending | triggered
     // https://home-assistant.io/components/alarm_control_panel.mqtt/
     let lastStatus;
 
-    // Paradox Area State - 8 Zones
-    let state = [false, false, false, false, false, false, false, false];
-
-    function serial_REFACTOR_ME(err) {
-        if (err) {
-            error(err.message);
-        }
-    }
-
     mqtt.on('message', (topic, buffer) => {
         const message = buffer.toString();
         debug(`mqtt topic: ${topic}, message: ${message}`);
 
-        // process received message
-        if (topic === STATE_TOPIC) {
+        function handleError(err) {
+            if (err) {
+                error(err);
+            }
+        }
+
+        // process received message from MQTT
+        if (topic === stateTopic) {
             lastStatus = message;
             return;
         }
 
-        if (topic === COMMAND_TOPIC) {
+        if (topic === commandTopic) {
             if (message === 'DISARM') {
-                const command = `AD001${USER_CODE}\r` +
-                    `AD002${USER_CODE}\r` +
-                    `AD003${USER_CODE}\r` +
-                    `AD004${USER_CODE}\r` +
-                    `AD005${USER_CODE}\r` +
-                    `AD006${USER_CODE}\r` +
-                    `AD007${USER_CODE}\r` +
-                    `AD008${USER_CODE}\r`;
-                serial.write(command, serial_REFACTOR_ME);
-                // mqtt.publish(STATE_TOPIC, 'pending'); // TODO should i enable this? need to do something with the response
+                const command = `AD001${userCode}\r` +
+                    `AD002${userCode}\r` +
+                    `AD003${userCode}\r` +
+                    `AD004${userCode}\r` +
+                    `AD005${userCode}\r` +
+                    `AD006${userCode}\r` +
+                    `AD007${userCode}\r` +
+                    `AD008${userCode}\r`;
+                serial.write(command, handleError);
+                // mqtt.publish(stateTopic, 'pending'); // TODO should i enable this? need to do something with the response
                 return;
             }
 
             if (message === 'ARM_HOME') {
-                const command = `AA001S${USER_CODE}\r` + // S:Stay
-                    `AA002S${USER_CODE}\r` +
-                    `AA003S${USER_CODE}\r` +
-                    `AA004S${USER_CODE}\r` +
-                    `AA005S${USER_CODE}\r` +
-                    `AA006S${USER_CODE}\r` +
-                    `AA007S${USER_CODE}\r` +
-                    `AA008S${USER_CODE}\r`;
-                serial.write(command, serial_REFACTOR_ME);
-                // mqtt.publish(STATE_TOPIC, 'pending'); // TODO should i enable this? need to do something with the response
+                const command = `AA001S${userCode}\r` + // S:Stay
+                    `AA002S${userCode}\r` +
+                    `AA003S${userCode}\r` +
+                    `AA004S${userCode}\r` +
+                    `AA005S${userCode}\r` +
+                    `AA006S${userCode}\r` +
+                    `AA007S${userCode}\r` +
+                    `AA008S${userCode}\r`;
+                serial.write(command, handleError);
+                // mqtt.publish(stateTopic, 'pending'); // TODO should i enable this? need to do something with the response
                 return;
             }
 
             if (message === 'ARM_AWAY') {
-                const command = `AA001A${USER_CODE}\r` + // A:Regular
-                    `AA002A${USER_CODE}\r` +
-                    `AA003A${USER_CODE}\r` +
-                    `AA004A${USER_CODE}\r` +
-                    `AA005A${USER_CODE}\r` +
-                    `AA006A${USER_CODE}\r` +
-                    `AA007A${USER_CODE}\r` +
-                    `AA008A${USER_CODE}\r`;
-                serial.write(command, serial_REFACTOR_ME);
-                // mqtt.publish(STATE_TOPIC, 'pending'); // TODO should i enable this? need to do something with the response
+                const command = `AA001A${userCode}\r` + // A:Regular
+                    `AA002A${userCode}\r` +
+                    `AA003A${userCode}\r` +
+                    `AA004A${userCode}\r` +
+                    `AA005A${userCode}\r` +
+                    `AA006A${userCode}\r` +
+                    `AA007A${userCode}\r` +
+                    `AA008A${userCode}\r`;
+                serial.write(command, handleError);
+                // mqtt.publish(stateTopic, 'pending'); // TODO should i enable this? need to do something with the response
                 return;
             }
             return;
         }
     });
 
-    function trigger(output) {
+
+
+
+    /**
+     * Input from Paradox (Serial) --> HA (mqtt)
+     */
+
+    // Paradox Area State - 8 Zones
+    let areaState = [false, false, false, false, false, false, false, false];
+
+    function serialTrigger(output) {
         const _g = output.substr(1, 3);
         let _n, _a;
         switch (_g) {
@@ -104,7 +118,7 @@ module.exports = (serial, mqtt) => {
             case '010': // Arming with User Code
             case '011': // Arming with Keyswitch
             case '012': // Special Arming
-                mqtt.publish(STATE_TOPIC, 'armed_away');
+                mqtt.publish(stateTopic, 'armed_away');
                 break;
 
             case '064': // Status 1
@@ -113,11 +127,11 @@ module.exports = (serial, mqtt) => {
                     switch (_n) {
                         case '000': // Armed
                         case '001': // Force Armed
-                            mqtt.publish(STATE_TOPIC, 'armed_away');
+                            mqtt.publish(stateTopic, 'armed_away');
                             break;
                         case '002': // Stay Armed
                         case '003': // Instant Armed
-                            mqtt.publish(STATE_TOPIC, 'armed_home');
+                            mqtt.publish(stateTopic, 'armed_home');
                             break;
                     }
                 }
@@ -133,75 +147,68 @@ module.exports = (serial, mqtt) => {
             case '019': // Alarm Cancelled with Master'
             case '020': // Alarm Cancelled with User Code'
             case '021': // Alarm Cancelled with Keyswitch'
-                mqtt.publish(STATE_TOPIC, 'disarmed');
+                mqtt.publish(stateTopic, 'disarmed');
                 break;
 
             case '024': // Zone in Alarm
                 _a = output.substr(9, 3);
                 _a = parseInt(_a);
-                state[_a - 1] = true;
-                mqtt.publish(STATE_TOPIC, 'triggered');
+                areaState[_a - 1] = true;
+                mqtt.publish(stateTopic, 'triggered');
                 break;
 
             case '026': // Zone Alarm Restore
                 _a = output.substr(9, 3);
                 _a = parseInt(_a);
-                state[_a - 1] = false;
+                areaState[_a - 1] = false;
 
                 function isAllAlarmOff() {
-                    return !(state[0] || state[1] || state[2] || state[3] || state[4] || state[5] || state[6] || state[7]);
+                    return !(areaState[0] || areaState[1] || areaState[2] || areaState[3] ||
+                        areaState[4] || areaState[5] || areaState[6] || areaState[7]);
                 }
 
                 if (isAllAlarmOff()) {
-                    mqtt.publish(STATE_TOPIC, 'disarmed');
+                    mqtt.publish(stateTopic, 'disarmed');
                 }
                 break;
 
             case '065': // Status 2
                 _n = output.substr(5, 3);
                 if (_n === '001') { // Exit Delay
-                    mqtt.publish(STATE_TOPIC, 'pending');
+                    mqtt.publish(stateTopic, 'pending');
                 }
                 break;
         }
     }
 
-    /* TODO move this shit out to some where else (END) */
-    /* TODO move this shit out to some where else (END) */
-    /* TODO move this shit out to some where else (END) */
 
+    // Read From Serial Function
 
-
-    let _readData = (buffer) => {
+    let _serialRead = (buffer) => {
         const output = buffer.toString();
 
         if (output.length === 12 && output.charAt(0) === 'G' &&
             output.charAt(4) === 'N' && output.charAt(8) === 'A') {
             serialInterpreter(output);
-            trigger(output);
+            serialTrigger(output);
         } else {
             debug(`unknown data received: ${output}`);
         }
     };
 
-    serial.on('data', _readData);
+    serial.on('data', _serialRead);
 
+    function serialRead(input, res) {
 
+        serial.removeListener('data', _serialRead);
 
-    /* General Functions */
-
-    function read(input, res) {
-
-        serial.removeListener('data', _readData);
-
-        _readData = (buffer) => {
-
+        _serialRead = (buffer) => {
             const output = buffer.toString();
 
             if (output.length === 12 && output.charAt(0) === 'G' &&
                 output.charAt(4) === 'N' && output.charAt(8) === 'A') {
                 serialInterpreter(output);
-                trigger(output);
+                serialTrigger(output);
             } else {
                 debug(`unknown data received: ${output}`);
             }
@@ -214,13 +221,13 @@ module.exports = (serial, mqtt) => {
             }
         };
 
-        serial.on('data', _readData);
+        serial.on('data', _serialRead);
     }
 
-    function write(res) {
+    function handleErrorResponse(res) {
         return (err) => {
             if (err) {
-                error(err.message);
+                error(err);
                 if (!res.headerSent) {
                     res.send(err);
                 }
@@ -229,98 +236,104 @@ module.exports = (serial, mqtt) => {
     }
 
 
+
+
+    /**
+     * Routes
+     */
+
     /* Standard Command */
 
     router.get('/command/:command', (req, res) => {
         const command = req.params.command;
-        read(command.substr(0, 5), res);
-        serial.write(`${command}\r`, write(res));
+        serialRead(command.substr(0, 5), res);
+        serial.write(`${command}\r`, handleErrorResponse(res));
     });
 
     /* Area */
 
     router.get('/area/status/:id', (req, res) => {
         const input = `RA${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}\r`, handleErrorResponse(res));
     });
 
     router.get('/area/label/:id', (req, res) => {
         const input = `AL${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}\r`, handleErrorResponse(res));
     });
 
     router.get('/area/arm/:id', (req, res) => {
         const input = `AA${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}${ARM_CODE}${USER_CODE}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}${armCode}${userCode}\r`, handleErrorResponse(res));
     });
 
     router.get('/area/quickarm/:id', (req, res) => {
         const input = `AQ${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}${ARM_CODE}${USER_CODE}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}${armCode}${userCode}\r`, handleErrorResponse(res));
     });
 
     router.get('/area/disarm/:id', (req, res) => {
         const input = `AD${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}${USER_CODE}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}${userCode}\r`, handleErrorResponse(res));
     });
 
     router.get('/area/panic/emergency/:id', (req, res) => {
         const input = `PE${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}\r`, handleErrorResponse(res));
     });
 
     router.get('/area/panic/medical/:id', (req, res) => {
         const input = `PM${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}\r`, handleErrorResponse(res));
     });
 
     router.get('/area/panic/fire/:id', (req, res) => {
         const input = `PF${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}\r`, handleErrorResponse(res));
     });
 
     router.get('/area/smoke/reset/:id', (req, res) => {
         const input = `SR${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}\r`, handleErrorResponse(res));
     });
 
     /* Zone */
 
     router.get('/zone/status/:id', (req, res) => {
         const input = `RZ${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}\r`, handleErrorResponse(res));
     });
 
     router.get('/zone/label/:id', (req, res) => {
         const input = `ZL${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}\r`, handleErrorResponse(res));
     });
 
     /* User */
 
     router.get('/user/label/:id', (req, res) => {
         const input = `UL${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}\r`, handleErrorResponse(res));
     });
 
     /* Utility Keys */
 
     router.get('/utility/:id', (req, res) => {
         const input = `UK${req.params.id}`;
-        read(input, res);
-        serial.write(`${input}\r`, write(res));
+        serialRead(input, res);
+        serial.write(`${input}\r`, handleErrorResponse(res));
     });
 
     return router;

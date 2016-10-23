@@ -8,10 +8,7 @@ const error = require('debug')('app:error'); // TODO didn't go to stderr??? http
 const http = require('http');
 const mqtt = require('mqtt');
 const SerialPort = require('serialport');
-const {
-    homeAssistant,
-    paradox
-} = require('../config.json');
+const config = require('../config.json');
 
 
 function initializeSerial(done) {
@@ -22,7 +19,7 @@ function initializeSerial(done) {
         parity: 'none',
         parser: SerialPort.parsers.readline('\r')
     };
-    const serial = new SerialPort(paradox.serial.port, serialOptions);
+    const serial = new SerialPort(config.paradox.serial.port, serialOptions);
 
     serial.on('open', () => {
         debug('serial port connected.');
@@ -37,7 +34,7 @@ function initializeMQTT(done) {
         host,
         stateTopic,
         commandTopic
-    } = homeAssistant.mqtt;
+    } = config.homeAssistant.mqtt;
     const client = mqtt.connect(host, { clientId: 'smartbox_ha_paradox' });
 
     client.on('connect', () => {
@@ -65,7 +62,7 @@ function initializeMQTT(done) {
             callback = true;
             return done(err);
         }
-        error(err) // TODO fail loudly. shut down process?
+        error(err); // TODO fail loudly. shut down process?
     });
 }
 
