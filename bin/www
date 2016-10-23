@@ -38,7 +38,7 @@ function initializeMQTT(done) {
         stateTopic,
         commandTopic
     } = homeAssistant.mqtt;
-    const client = mqtt.connect(host);
+    const client = mqtt.connect(host, { clientId: 'smartbox_ha_paradox' });
 
     client.on('connect', () => {
         debug('mqtt connected.');
