@@ -268,9 +268,9 @@ module.exports = (output, done) => {
     const _gDesc = gDesc[_g] || 'Unknown';
 
     let _nDesc = nDesc[_g];
-    if (typeof(_nDesc) === 'object') {
+    if (typeof _nDesc === 'object') {
         _nDesc = _nDesc[_n] || 'Unknown';
-    } else if (typeof(_nDesc) === 'string') {
+    } else if (typeof _nDesc === 'string') {
         _nDesc += ' ' + _n;
     } else {
         _nDesc = 'Unknown';

@@ -1,11 +1,15 @@
 {
     "homeAssistant": {
-        "mqttURL": "mqtt://localhost",
-        "mqttStateTopic": "smartbox/alarm",
-        "mqttCommandTopic": "smartbox/alarm/set"
+        "mqtt": {
+            "host": "mqtt://localhost",
+            "stateTopic": "smartbox/alarm",
+            "commandTopic": "smartbox/alarm/set"
+        }
     },
     "paradox": {
-        "serialPort": "/dev/tty.usbserial-a40069b4",
-        "serialUserCode": "1234"
+        "serial": {
+            "port": "/dev/tty.usbserial-a40069b4",
+            "userCode": "1234"
+        }
     }
 }
