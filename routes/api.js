@@ -20,7 +20,9 @@ const {
 } = config.homeAssistant.mqtt;
 const userCode = config.paradox.serial.userCode;
 const armCode = 'A'; // A:Regular, F:Force, S:Stay, I:Instant
-
+const retainOpts = {
+    retain: true
+};
 
 module.exports = (serial, mqtt) => {
 
@@ -42,7 +44,7 @@ module.exports = (serial, mqtt) => {
 
     mqtt.on('message', (topic, buffer) => {
         const message = buffer.toString();
-        debug(`mqtt topic: ${topic}, message: ${message}`);
+        debug(`mqtt ${topic}: ${message}`);
 
         // process received message from MQTT
         if (topic === stateTopic) {
@@ -116,7 +118,7 @@ module.exports = (serial, mqtt) => {
             case '010': // Arming with User Code
             case '011': // Arming with Keyswitch
             case '012': // Special Arming
-                mqtt.publish(stateTopic, 'armed_away');
+                mqtt.publish(stateTopic, 'armed_away', retainOpts);
                 break;
 
             case '064': // Status 1
@@ -125,11 +127,11 @@ module.exports = (serial, mqtt) => {
                     switch (_n) {
                         case '000': // Armed
                         case '001': // Force Armed
-                            mqtt.publish(stateTopic, 'armed_away');
+                            mqtt.publish(stateTopic, 'armed_away', retainOpts);
                             break;
                         case '002': // Stay Armed
                         case '003': // Instant Armed
-                            mqtt.publish(stateTopic, 'armed_home');
+                            mqtt.publish(stateTopic, 'armed_home', retainOpts);
                             break;
                     }
                 }
@@ -145,14 +147,14 @@ module.exports = (serial, mqtt) => {
             case '019': // Alarm Cancelled with Master'
             case '020': // Alarm Cancelled with User Code'
             case '021': // Alarm Cancelled with Keyswitch'
-                mqtt.publish(stateTopic, 'disarmed');
+                mqtt.publish(stateTopic, 'disarmed', retainOpts);
                 break;
 
             case '024': // Zone in Alarm
                 _a = output.substr(9, 3);
                 _a = parseInt(_a);
                 areaState[_a - 1] = true;
-                mqtt.publish(stateTopic, 'triggered');
+                mqtt.publish(stateTopic, 'triggered', retainOpts);
                 break;
 
             case '026': // Zone Alarm Restore
@@ -166,14 +168,14 @@ module.exports = (serial, mqtt) => {
                 }
 
                 if (isAllAlarmOff()) {
-                    mqtt.publish(stateTopic, 'disarmed');
+                    mqtt.publish(stateTopic, 'disarmed', retainOpts);
                 }
                 break;
 
             case '065': // Status 2
                 _n = output.substr(5, 3);
                 if (_n === '001') { // Exit Delay
-                    mqtt.publish(stateTopic, 'pending');
+                    mqtt.publish(stateTopic, 'pending', retainOpts);
                 }
                 break;
         }
@@ -185,7 +187,7 @@ module.exports = (serial, mqtt) => {
         }
 
         if (output.includes('AD')) {
-            mqtt.publish(stateTopic, 'disarmed');
+            mqtt.publish(stateTopic, 'disarmed', retainOpts);
         }
     }
 
