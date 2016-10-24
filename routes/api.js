@@ -7,8 +7,10 @@ const SerialPort = require('serialport');
 const router = express.Router();
 
 const serialInterpreter = process.env.NODE_ENV === 'production' ?
-                            () => { return; } : // ignore this function in production
-                            require('../controller/serialInterpreter');
+    () => {
+        return;
+    } : // ignore this function in production
+    require('../controller/serialInterpreter');
 const serialResponder = require('../controller/serialResponder');
 
 const config = require('../config.json');
@@ -24,8 +26,8 @@ module.exports = (serial, mqtt) => {
 
     /**
      * Gave up splitting them into separate component.
-     * Perhaps it's better to keep them in a file for simplicity.
-     * Will only work on this if I have more time.
+     * Perhaps to keep them in a single file for simplicity.
+     * Will only work on this if I have more time (and money psfff).
      */
 
 
@@ -42,12 +44,6 @@ module.exports = (serial, mqtt) => {
         const message = buffer.toString();
         debug(`mqtt topic: ${topic}, message: ${message}`);
 
-        function handleError(err) {
-            if (err) {
-                error(err);
-            }
-        }
-
         // process received message from MQTT
         if (topic === stateTopic) {
             lastStatus = message;
@@ -55,6 +51,12 @@ module.exports = (serial, mqtt) => {
         }
 
         if (topic === commandTopic) {
+            const handleError = (err) => {
+                if (err) {
+                    error(err);
+                }
+            };
+
             if (message === 'DISARM') {
                 const command = `AD001${userCode}\r` +
                     `AD002${userCode}\r` +
@@ -65,7 +67,6 @@ module.exports = (serial, mqtt) => {
                     `AD007${userCode}\r` +
                     `AD008${userCode}\r`;
                 serial.write(command, handleError);
-                // mqtt.publish(stateTopic, 'pending'); // TODO should i enable this? need to do something with the response
                 return;
             }
 
@@ -79,7 +80,6 @@ module.exports = (serial, mqtt) => {
                     `AA007S${userCode}\r` +
                     `AA008S${userCode}\r`;
                 serial.write(command, handleError);
-                // mqtt.publish(stateTopic, 'pending'); // TODO should i enable this? need to do something with the response
                 return;
             }
 
@@ -93,10 +93,8 @@ module.exports = (serial, mqtt) => {
                     `AA007A${userCode}\r` +
                     `AA008A${userCode}\r`;
                 serial.write(command, handleError);
-                // mqtt.publish(stateTopic, 'pending'); // TODO should i enable this? need to do something with the response
                 return;
             }
-            return;
         }
     });
 
@@ -110,7 +108,7 @@ module.exports = (serial, mqtt) => {
     // Paradox Area State - 8 Zones
     let areaState = [false, false, false, false, false, false, false, false];
 
-    function serialTrigger(output) {
+    function serialEventTrigger(output) {
         const _g = output.substr(1, 3);
         let _n, _a;
         switch (_g) {
@@ -181,6 +179,12 @@ module.exports = (serial, mqtt) => {
         }
     }
 
+    function serialCommandTrigger(output) {
+        if (output.includes('AD')) {
+            mqtt.publish(stateTopic, 'disarmed');
+        }
+    }
+
 
     // Read From Serial Function
 
@@ -190,9 +194,11 @@ module.exports = (serial, mqtt) => {
         if (output.length === 12 && output.charAt(0) === 'G' &&
             output.charAt(4) === 'N' && output.charAt(8) === 'A') {
             serialInterpreter(output);
-            serialTrigger(output);
+            serialEventTrigger(output);
+        } else if (output.includes('&ok')) {
+            serialCommandTrigger(output);
         } else {
-            debug(output);
+            debug(`serial: ${output}`);
         }
     };
 
@@ -208,9 +214,11 @@ module.exports = (serial, mqtt) => {
             if (output.length === 12 && output.charAt(0) === 'G' &&
                 output.charAt(4) === 'N' && output.charAt(8) === 'A') {
                 serialInterpreter(output);
-                serialTrigger(output);
+                serialEventTrigger(output);
+            } else if (output.includes('&ok')) {
+                serialCommandTrigger(output);
             } else {
-                debug(output);
+                debug(`serial: ${output}`);
             }
 
             if (!res.headerSent) {
@@ -338,6 +346,3 @@ module.exports = (serial, mqtt) => {
 
     return router;
 };
-
-
-// module.exports = router;
