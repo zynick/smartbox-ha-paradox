@@ -180,6 +180,10 @@ module.exports = (serial, mqtt) => {
     }
 
     function serialCommandTrigger(output) {
+        if (!output.includes('&ok')) {
+            return;
+        }
+
         if (output.includes('AD')) {
             mqtt.publish(stateTopic, 'disarmed');
         }
@@ -195,10 +199,9 @@ module.exports = (serial, mqtt) => {
             output.charAt(4) === 'N' && output.charAt(8) === 'A') {
             serialInterpreter(output);
             serialEventTrigger(output);
-        } else if (output.includes('&ok')) {
-            serialCommandTrigger(output);
         } else {
             debug(`serial: ${output}`);
+            serialCommandTrigger(output);
         }
     };
 
@@ -215,10 +218,9 @@ module.exports = (serial, mqtt) => {
                 output.charAt(4) === 'N' && output.charAt(8) === 'A') {
                 serialInterpreter(output);
                 serialEventTrigger(output);
-            } else if (output.includes('&ok')) {
-                serialCommandTrigger(output);
             } else {
                 debug(`serial: ${output}`);
+                serialCommandTrigger(output);
             }
 
             if (!res.headerSent) {
