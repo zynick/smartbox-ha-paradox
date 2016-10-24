@@ -7,8 +7,8 @@ const SerialPort = require('serialport');
 const router = express.Router();
 
 const serialInterpreter = process.env.NODE_ENV === 'production' ?
-                            require('../controller/serialInterpreter') :
-                            () => { return; };  // ignore this function in production
+                            () => { return; } : // ignore this function in production
+                            require('../controller/serialInterpreter');
 const serialResponder = require('../controller/serialResponder');
 
 const config = require('../config.json');
@@ -192,7 +192,7 @@ module.exports = (serial, mqtt) => {
             serialInterpreter(output);
             serialTrigger(output);
         } else {
-            debug(`unknown data received: ${output}`);
+            debug(output);
         }
     };
 
@@ -210,7 +210,7 @@ module.exports = (serial, mqtt) => {
                 serialInterpreter(output);
                 serialTrigger(output);
             } else {
-                debug(`unknown data received: ${output}`);
+                debug(output);
             }
 
             if (!res.headerSent) {

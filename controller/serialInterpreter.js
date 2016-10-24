@@ -4,7 +4,7 @@
  * Interpret Serial Data (System Event) to Human Readable Messages
  */
 
-const debug = require('debug')('app:serialInterpreter');
+const debug = require('debug')('app:int');
 
 const gDesc = {
     '000': 'Zone is OK',
@@ -70,8 +70,8 @@ const gDesc = {
     '061': 'Future Use',
     '062': 'Access Granted to User',
     '063': 'Access Denied to User',
-    '064': '___ Status 1',
-    '065': 'Status 2',
+    '064': '___? Status 1',
+    '065': '___? Status 2',
     '066': 'Status 3',
     '067': 'Future Use'
 };
@@ -232,10 +232,10 @@ const nDesc = {
     '062': 'User Code',
     '063': 'User Code',
     '064': {
-        '000': 'Armed',
-        '001': 'Force Armed',
-        '002': 'Stay Armed',
-        '003': 'Instant Armed',
+        '000': '___ Armed',
+        '001': '___ Force Armed',
+        '002': '___ Stay Armed',
+        '003': '___ Instant Armed',
         '004': 'Strobe Alarm',
         '005': 'Silent Alarm',
         '006': 'Audible Alarm',
@@ -243,7 +243,7 @@ const nDesc = {
     },
     '065': {
         '000': 'Ready',
-        '001': 'Exit Delay',
+        '001': '___ Exit Delay',
         '002': 'Entry Delay',
         '003': 'System In Trouble',
         '004': 'Alarm in  Memory',

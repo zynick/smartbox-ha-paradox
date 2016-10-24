@@ -8,8 +8,8 @@
     },
     "paradox": {
         "serial": {
-            "port": "/dev/tty.Bluetooth-Incoming-Port",
-            "port-real": "/dev/tty.usbserial-a40069b4",
+            "port-fake": "/dev/tty.Bluetooth-Incoming-Port",
+            "port": "/dev/tty.usbserial-a40069b4",
             "userCode": "1234"
         }
     }
