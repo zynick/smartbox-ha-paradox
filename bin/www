@@ -4,9 +4,9 @@
 
 const async = require('async');
 const debug = require('debug')('app:www');
-const error = require('debug')('app:error'); // TODO didn't go to stderr??? https://www.npmjs.com/package/debug
+const error = require('debug')('app:error');
 const http = require('http');
-const mqtt = require('mqtt');
+const MQTT = require('mqtt');
 const SerialPort = require('serialport');
 const config = require('../config.json');
 
@@ -35,20 +35,22 @@ function initializeMQTT(done) {
         stateTopic,
         commandTopic
     } = config.homeAssistant.mqtt;
-    const client = mqtt.connect(host, { clientId: 'smartbox_ha_paradox' });
+    const mqtt = MQTT.connect(host, {
+        clientId: 'smartbox_ha_paradox'
+    });
 
-    client.on('connect', () => {
+    mqtt.on('connect', () => {
         debug('mqtt connected.');
-        client.subscribe(stateTopic);
-        client.subscribe(commandTopic);
+        mqtt.subscribe(stateTopic);
+        mqtt.subscribe(commandTopic);
 
         if (!callback) {
             callback = true;
-            done(null, client);
+            done(null, mqtt);
         }
     });
 
-    client.on('offline', () => {
+    mqtt.on('offline', () => {
         const err = new Error('mqtt server offline.');
         if (!callback) {
             callback = true;
@@ -57,7 +59,7 @@ function initializeMQTT(done) {
         error(err); // TODO fail loudly. shut down process?
     });
 
-    client.on('error', (err) => {
+    mqtt.on('error', (err) => {
         if (!callback) {
             callback = true;
             return done(err);
@@ -118,11 +120,11 @@ async.parallel([
         // handle specific listen errors with friendly messages
         switch (err.code) {
             case 'EACCES':
-                error(`${bind} requires elevated privileges`); // TODO didn't go to stderr??? https://www.npmjs.com/package/debug
+                error(`${bind} requires elevated privileges`);
                 process.exit(1);
                 break;
             case 'EADDRINUSE':
-                error(`${bind} is already in use`); // TODO didn't go to stderr??? https://www.npmjs.com/package/debug
+                error(`${bind} is already in use`);
                 process.exit(1);
                 break;
             default:
