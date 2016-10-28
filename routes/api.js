@@ -10,8 +10,9 @@ const serialInterpreter = process.env.NODE_ENV === 'production' ?
     () => {
         return;
     } : // ignore this function in production
-    require('../controller/serialInterpreter');
-const serialResponder = require('../controller/serialResponder');
+    require('../helpers/serialInterpreter');
+
+const serialResponder = require('../helpers/serialResponder');
 
 const config = require('../config.json');
 const {

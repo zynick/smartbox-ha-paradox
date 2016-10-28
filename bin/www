@@ -35,6 +35,7 @@ function initializeMQTT(done) {
         stateTopic,
         commandTopic
     } = config.homeAssistant.mqtt;
+
     const mqtt = MQTT.connect(host, {
         clientId: 'smartbox_ha_paradox'
     });
@@ -52,11 +53,14 @@ function initializeMQTT(done) {
 
     mqtt.on('offline', () => {
         const err = new Error('mqtt server offline.');
+
         if (!callback) {
             callback = true;
             return done(err);
         }
-        error(err); // TODO fail loudly. shut down process?
+
+        error(err);
+        process.exit(1); // fail loudly
     });
 
     mqtt.on('error', (err) => {
@@ -64,7 +68,9 @@ function initializeMQTT(done) {
             callback = true;
             return done(err);
         }
-        error(err); // TODO fail loudly. shut down process?
+
+        error(err);
+        process.exit(1); // fail loudly
     });
 }
 
