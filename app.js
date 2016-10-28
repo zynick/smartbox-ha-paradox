@@ -8,6 +8,7 @@ const path = require('path');
 
 
 module.exports = (serial, mqtt) => {
+
     /* View Engine Setup */
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
@@ -33,7 +34,7 @@ module.exports = (serial, mqtt) => {
 
 
     /* Error Handlers */
-    app.use((err, req, res, next) => {
+    app.use((err, req, res) => {
         res.status(err.status || 500);
         // only print stacktrace in development, hide in production
         err = app.get('env') === 'development' ? err : {};

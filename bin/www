@@ -11,7 +11,7 @@ const SerialPort = require('serialport');
 const config = require('../config.json');
 
 
-function initializeSerial(done) {
+const initializeSerial = (done) => {
     const serialOptions = {
         baudrate: 2400,
         dataBits: 8,
@@ -25,9 +25,9 @@ function initializeSerial(done) {
         debug('serial port connected.');
         return done(null, serial);
     });
-}
+};
 
-function initializeMQTT(done) {
+const initializeMQTT = (done) => {
     let callback = false;
 
     const {
@@ -72,7 +72,7 @@ function initializeMQTT(done) {
         error(err);
         process.exit(1); // fail loudly
     });
-}
+};
 
 
 async.parallel([
@@ -92,7 +92,7 @@ async.parallel([
 
     /* Get port from environment and store in Express. */
     // normalize a port into a number, string, or false.
-    function normalizePort(val) {
+    const normalizePort = (val) => {
         const port = parseInt(val, 10);
 
         if (isNaN(port)) {
@@ -114,8 +114,10 @@ async.parallel([
 
     const server = http.createServer(app);
 
+    // listen on provided port, on all network interfaces.
     server.listen(port);
 
+    // event listener for HTTP server 'error' event.
     server.on('error', (err) => {
         if (err.syscall !== 'listen') {
             throw err;
@@ -138,6 +140,7 @@ async.parallel([
         }
     });
 
+    // event listener for HTTP server 'listening' event.
     server.on('listening', () => {
         const addr = server.address();
         const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;

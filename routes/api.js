@@ -111,7 +111,7 @@ module.exports = (serial, mqtt) => {
     // Paradox Area State - 8 Zones
     let areaState = [false, false, false, false, false, false, false, false];
 
-    function serialEventTrigger(output) {
+    const serialEventTrigger = (output) => {
         const _g = output.substr(1, 3);
         let _n, _a;
         switch (_g) {
@@ -163,10 +163,9 @@ module.exports = (serial, mqtt) => {
                 _a = parseInt(_a);
                 areaState[_a - 1] = false;
 
-                function isAllAlarmOff() {
-                    return !(areaState[0] || areaState[1] || areaState[2] || areaState[3] ||
-                        areaState[4] || areaState[5] || areaState[6] || areaState[7]);
-                }
+                const isAllAlarmOff = () => {
+                    return !(areaState[0] || areaState[1] || areaState[2] || areaState[3] || areaState[4] || areaState[5] || areaState[6] || areaState[7]);
+                };
 
                 if (isAllAlarmOff()) {
                     mqtt.publish(stateTopic, 'disarmed', retainOpts);
@@ -180,9 +179,9 @@ module.exports = (serial, mqtt) => {
                 }
                 break;
         }
-    }
+    };
 
-    function serialCommandTrigger(output) {
+    const serialCommandTrigger = (output) => {
         if (!output.includes('&ok')) {
             return;
         }
@@ -190,7 +189,7 @@ module.exports = (serial, mqtt) => {
         if (output.includes('AD')) {
             mqtt.publish(stateTopic, 'disarmed', retainOpts);
         }
-    }
+    };
 
 
     // Read From Serial Function
@@ -210,7 +209,7 @@ module.exports = (serial, mqtt) => {
 
     serial.on('data', _serialRead);
 
-    function serialRead(input, res) {
+    const serialRead = (input, res) => {
 
         serial.removeListener('data', _serialRead);
 
@@ -235,9 +234,9 @@ module.exports = (serial, mqtt) => {
         };
 
         serial.on('data', _serialRead);
-    }
+    };
 
-    function handleErrorResponse(res) {
+    const handleErrorResponse = (res) => {
         return (err) => {
             if (err) {
                 error(err);
@@ -246,7 +245,7 @@ module.exports = (serial, mqtt) => {
                 }
             }
         };
-    }
+    };
 
 
 
