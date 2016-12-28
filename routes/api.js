@@ -115,11 +115,19 @@ module.exports = (serial, mqtt) => {
         const _g = output.substr(1, 3);
         let _n, _a;
         switch (_g) {
+            case '001': // Zone is Open
+                if (lastStatus === 'armed_away' || lastStatus === 'armed_home') {
+                    mqtt.publish(stateTopic, 'triggered', retainOpts);
+                }
+                break;
+
             case '009': // Arming with Master
             case '010': // Arming with User Code
             case '011': // Arming with Keyswitch
             case '012': // Special Arming
-                mqtt.publish(stateTopic, 'armed_away', retainOpts);
+                if (lastStatus !== 'triggered') {
+                    mqtt.publish(stateTopic, 'armed_away', retainOpts);
+                }
                 break;
 
             case '064': // Status 1
