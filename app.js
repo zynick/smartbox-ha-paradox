@@ -11,7 +11,7 @@ module.exports = (serial, mqtt) => {
 
     /* View Engine Setup */
     app.set('views', path.join(__dirname, 'views'));
-    app.set('view engine', 'jade');
+    app.set('view engine', 'pug');
 
 
     /* App Stacks */
